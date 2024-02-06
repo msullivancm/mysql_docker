@@ -1,0 +1,57 @@
+## Bing
+Claro, você pode rodar o MySQL 5.7 no seu computador Linux usando Docker com os seguintes passos:
+- Primeiro, você precisa puxar a imagem do MySQL 5.7 do Docker Hub. Abra o terminal e digite o seguinte comando:
+
+docker pull mysql:5.7
+
+- Depois de puxar a imagem, você pode iniciar um contêiner MySQL usando o seguinte comando. Substitua some-mysql pelo nome que você deseja para o seu contêiner e my-secret-pw pela senha que você deseja definir para o usuário root do MySQL:
+
+sudo docker run --name some-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=senha -d mysql:5.7
+
+- Agora, o MySQL está rodando em um contêiner Docker. Você pode interagir com ele usando o cliente MySQL. Se você não tiver um cliente MySQL instalado no seu host, você pode usar o cliente MySQL dentro do contêiner Docker. Use o seguinte comando para iniciar uma sessão MySQL como root:
+
+docker exec -it some-mysql mysql -uroot -p
+
+Quando solicitado, insira a senha do root que você definiu anteriormente.
+Espero que isso ajude! Se você tiver mais perguntas, sinta-se à vontade para perguntar.
+
+
+
+
+
+
+Claro, aqui está um exemplo de Dockerfile que você pode usar:
+
+```Dockerfile
+# Use a imagem oficial do MySQL 5.7
+FROM mysql:5.7
+
+# Define variáveis de ambiente para a senha do MySQL
+ENV MYSQL_ROOT_PASSWORD=my-secret-pw
+ENV MYSQL_DATABASE=p12hml
+ENV MYSQL_INITDB_ARGS="--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+
+# Adiciona um script SQL ao diretório de scripts de inicialização do Docker
+ADD change_authentication.sql /docker-entrypoint-initdb.d
+
+# Expõe a porta 3306
+EXPOSE 3306
+```
+
+E aqui está o conteúdo do arquivo `change_authentication.sql` que altera o método de autenticação do usuário root para `mysql_native_password`:
+
+```sql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'my-secret-pw';
+FLUSH PRIVILEGES;
+```
+
+Por favor, substitua `'my-secret-pw'` pela senha que você deseja usar para o usuário root.
+
+Para construir e rodar o contêiner Docker, você pode usar os seguintes comandos:
+
+```bash
+docker build -t my-mysql .
+docker run --name mysql -p 3306:3306 -d my-mysql
+```
+
+Espero que isso ajude! Se você tiver mais perguntas, sinta-se à vontade para perguntar.
